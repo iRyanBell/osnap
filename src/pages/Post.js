@@ -50,16 +50,17 @@ export default function Post() {
     const oSnapContract = new window.web3.eth.Contract(abi, contractAddress);
 
     const [k0] = await window.web3.eth.getAccounts();
-    const totalTipAmount =
-      window.web3.utils.toWei(tipA, "eth") +
-      window.web3.utils.toWei(tipB, "eth");
+    const totalTipAmount = window.web3.utils
+      .toBN(window.web3.utils.toWei(tipA))
+      .add(window.web3.utils.toBN(window.web3.utils.toWei(tipB)))
+      .toString();
 
     oSnapContract.methods
       .addPost(
         Number(recipientA),
-        window.web3.utils.toWei(tipA, "wei"),
+        window.web3.utils.toWei(tipA),
         Number(recipientB),
-        window.web3.utils.toWei(tipB, "wei"),
+        window.web3.utils.toWei(tipB),
         digest,
         hashFunction,
         size
