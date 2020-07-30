@@ -176,7 +176,7 @@ export default function Post() {
               <Button
                 variant="contained"
                 onClick={handlePost}
-                disabled={tipA === "0" || tipB == "0"}
+                disabled={tipA === "0" || tipB === "0"}
               >
                 Post
               </Button>
