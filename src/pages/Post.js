@@ -145,7 +145,7 @@ export default function Post() {
               <TextField
                 autoFocus
                 fullWidth
-                label="Recipient (User ID)"
+                label="Post ID"
                 value={recipientA}
                 onChange={(e) => setRecipientA(e.target.value)}
               />
@@ -160,7 +160,7 @@ export default function Post() {
             <Box marginTop={4}>
               <TextField
                 fullWidth
-                label="Recipient (User ID)"
+                label="Post ID"
                 value={recipientB}
                 onChange={(e) => setRecipientB(e.target.value)}
               />
