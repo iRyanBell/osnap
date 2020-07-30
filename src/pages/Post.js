@@ -173,7 +173,11 @@ export default function Post() {
               />
             </Box>
             <Box display="flex" justifyContent="flex-end" marginTop={4}>
-              <Button variant="contained" onClick={handlePost}>
+              <Button
+                variant="contained"
+                onClick={handlePost}
+                disabled={tipA === "0" || tipB == "0"}
+              >
                 Post
               </Button>
             </Box>
