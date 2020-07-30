@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Container, Box } from "@material-ui/core";
 import { Grid, Card } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 import { useIPFS } from "../hooks";
 import { getMultihashFromBytes32, ipfsGatewayBaseURL } from "../utils/ipfs";
 import { ConnectivityErrors } from "../components";
@@ -30,12 +31,19 @@ export default function Feed() {
   const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
 
   useEffect(() => {
+    const isUserView = window.location.hash.startsWith("#/0x");
+    const userAddr = window.location.hash.slice(2);
+
     const getPosts = async () => {
       const oSnapContract = new window.web3.eth.Contract(abi, contractAddress);
 
       try {
         const nbTotalPosts = Number(
-          await oSnapContract.methods.getPostID().call()
+          isUserView
+            ? await oSnapContract.methods
+                .getTotalPostsByAddress(userAddr)
+                .call()
+            : await oSnapContract.methods.getPostID().call()
         );
         setTotalPosts(nbTotalPosts);
 
@@ -43,20 +51,29 @@ export default function Feed() {
 
         setPosts(
           await Promise.all(
-            [...Array(nbPostsOnPage).keys()].map((postIdx) => {
-              const postID = postOffset + postIdx;
-              return oSnapContract.methods
-                .getPostById(postID)
-                .call()
-                .then(({ digest, hashFunction, size }) => {
-                  const multihash = getMultihashFromBytes32({
-                    digest,
-                    hashFunction,
-                    size,
-                  });
-                  return { multihash, postID };
-                })
-                .catch(console.error);
+            [...Array(nbPostsOnPage).keys()].map(async (postIdx) => {
+              const postOffsetIdx = postOffset + postIdx;
+              const postID = isUserView
+                ? await oSnapContract.methods
+                    .getPostIDByAddressIdx(userAddr, postOffsetIdx)
+                    .call()
+                : postOffsetIdx;
+
+              const op = await oSnapContract.methods.getOPByID(postID).call();
+
+              const {
+                digest,
+                hashFunction,
+                size,
+              } = await oSnapContract.methods.getPostById(postID).call();
+
+              const multihash = getMultihashFromBytes32({
+                digest,
+                hashFunction,
+                size,
+              });
+
+              return { multihash, postID, op };
             })
           )
         );
@@ -78,7 +95,7 @@ export default function Feed() {
     <Container maxWidth="lg">
       <ConnectivityErrors ethAddr={ethAddr} peerID={peerID} />
       <Grid container spacing={3}>
-        {posts.map(({ multihash, postID }) => {
+        {posts.map(({ multihash, postID, op }) => {
           const postURL = [gatewayBaseURL, multihash].join("/");
 
           return (
@@ -87,7 +104,14 @@ export default function Feed() {
                 <a href={postURL} target="_blank" rel="noopener noreferrer">
                   <img src={postURL} width="100%" alt="oSnap.app Media" />
                 </a>
-                <Box padding={1}>ID: {postID}</Box>
+                <Box padding={1}>
+                  <Box flexGrow={1}>#{postID}</Box>
+                  <Box>
+                    <Link style={{ color: "#fff" }} to={op}>
+                      {op}
+                    </Link>
+                  </Box>
+                </Box>
               </Card>
             </Grid>
           );

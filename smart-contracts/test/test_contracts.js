@@ -4,7 +4,7 @@ const OSnap = artifacts.require("Osnap");
 contract("OSnap", (accounts) => {
   const test_bytes32 =
     "0x0000000000000000000000000000000000000000000000000000000000000000";
-  const [k0, k1, k2] = accounts;
+  const [k0, k1] = accounts;
   let osnap;
 
   it("should initialize", async () => {
@@ -42,7 +42,7 @@ contract("OSnap", (accounts) => {
   it("should revert if no tips are provided", async () => {
     try {
       await osnap.addPost(0, 0, 0, 0, web3.utils.fromUtf8("0"), 0, 0, {
-        from: k2,
+        from: k1,
         value: web3.utils.toWei("0.0", "ether").toString(),
       });
     } catch (err) {
@@ -87,7 +87,7 @@ contract("OSnap", (accounts) => {
       }
     );
     const postID = postTx.logs[0].args.postID.toNumber();
-    assert(postID == 0, "Invalid postID returned.");
+    assert(postID === 0, "Invalid postID returned.");
   });
 
   it("should increment the postID", async () => {
@@ -105,7 +105,7 @@ contract("OSnap", (accounts) => {
       }
     );
     const postID = postTx.logs[0].args.postID.toNumber();
-    assert(postID == 1, "Invalid postID returned.");
+    assert(postID === 1, "Invalid postID returned.");
   });
 
   it("should return a post multihash", async () => {
@@ -115,9 +115,9 @@ contract("OSnap", (accounts) => {
     const hashFn = post.hashFunction.toNumber();
     const size = post.size.toNumber();
 
-    assert(digest == test_bytes32, "Invalid Multihash: Digest");
-    assert(hashFn == 0, "Invalid Multihash: Hash Function");
-    assert(size == 0, "Invalid Multihash: Size");
+    assert(digest === test_bytes32, "Invalid Multihash: Digest");
+    assert(hashFn === 0, "Invalid Multihash: Hash Function");
+    assert(size === 0, "Invalid Multihash: Size");
   });
 
   it("should return a poster address by postID", async () => {
@@ -131,21 +131,14 @@ contract("OSnap", (accounts) => {
     assert(nbPosts === 2, "Invalid number of posts.");
   });
 
-  it("should return a multihash by address idx", async () => {
-    const post = await osnap.getPostByAddressIdx(k0, 0);
-
-    const digest = post.digest;
-    const hashFn = post.hashFunction.toNumber();
-    const size = post.size.toNumber();
-
-    assert(digest == test_bytes32, "Invalid Multihash: Digest");
-    assert(hashFn == 0, "Invalid Multihash: Hash Function");
-    assert(size == 0, "Invalid Multihash: Size");
+  it("should return a postID by address idx", async () => {
+    const postID = (await osnap.getPostIDByAddressIdx(k0, 0)).toNumber();
+    assert(postID === 0, "Invalid post ID");
   });
 
   it("should add a tip", async () => {
     await osnap.addTip(0, {
-      from: k2,
+      from: k1,
       value: web3.utils.toWei("0.123", "ether").toString(),
     });
   });

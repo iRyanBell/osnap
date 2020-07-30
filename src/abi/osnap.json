@@ -1,5 +1,5 @@
 {
-  "contractAddress": "0x5543236af8a85352909c93c1ab9f2dd97570e027",
+  "contractAddress": "0xd95Ef9d86aaf181fc064F27EBeB654a9d43787d1",
   "abi": [
     {
       "inputs": [],
@@ -122,22 +122,12 @@
           "type": "uint256"
         }
       ],
-      "name": "getPostByAddressIdx",
+      "name": "getPostIDByAddressIdx",
       "outputs": [
         {
-          "internalType": "bytes32",
-          "name": "digest",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "uint8",
-          "name": "hashFunction",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint8",
-          "name": "size",
-          "type": "uint8"
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",

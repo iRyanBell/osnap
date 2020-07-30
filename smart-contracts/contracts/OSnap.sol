@@ -63,23 +63,18 @@ contract OSnap {
         return (post.digest, post.hashFunction, post.size);
     }
 
-    /* Returns a post multihash by address:idx reference. */
-    function getPostByAddressIdx(address _addr, uint256 _idx)
+    /* Returns a post ID by address:idx reference. */
+    function getPostIDByAddressIdx(address _addr, uint256 _idx)
         public
         view
-        returns (
-            bytes32 digest,
-            uint8 hashFunction,
-            uint8 size
-        )
+        returns (uint256 id)
     {
         // Require valid post address & index.
         require(postsByAddress[_addr].length > 0, "Address not found.");
         require(_idx < postsByAddress[_addr].length, "Post not found.");
 
-        // Return post multihash.
-        Multihash storage post = posts[postsByAddress[_addr][_idx]];
-        return (post.digest, post.hashFunction, post.size);
+        // Return post ID.
+        return postsByAddress[_addr][_idx];
     }
 
     /* Returns the number of multihashes posted by an address. */
