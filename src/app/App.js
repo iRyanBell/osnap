@@ -1,5 +1,12 @@
 import React from "react";
+import { CssBaseline, ThemeProvider } from "@material-ui/core";
+import theme from "../app/theme";
 
 export default function App() {
-  return <div className="App">oSnap.app</div>;
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <main>oSnap.app</main>
+    </ThemeProvider>
+  );
 }
