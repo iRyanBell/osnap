@@ -1,0 +1,11 @@
+/* Full-screen vertical stack flexbox layout. */
+html,
+body,
+#root {
+  height: 100%;
+}
+#root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
