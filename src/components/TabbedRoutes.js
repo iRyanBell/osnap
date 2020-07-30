@@ -11,7 +11,10 @@ export default function TabbedRoutes({
   return (
     <>
       <NavMenu
-        childrenLeft={[<Logo />, <NavTabs location={location} />]}
+        childrenLeft={[
+          <Logo key="logo" />,
+          <NavTabs key="navTabs" location={location} />,
+        ]}
         childrenRight={
           <NavIpfsGatewaySwitch
             isLocalIPFSGateway={isLocalIPFSGateway}

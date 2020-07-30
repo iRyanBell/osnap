@@ -30,12 +30,12 @@ export default function Feed() {
 
   const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
 
-  useEffect(() => {
-    const isUserView = window.location.hash.startsWith("#/0x");
-    const userAddr = window.location.hash.slice(2);
+  const isUserView = window.location.hash.startsWith("#/0x");
 
+  useEffect(() => {
     const getPosts = async () => {
       const oSnapContract = new window.web3.eth.Contract(abi, contractAddress);
+      const userAddr = window.location.hash.slice(2);
 
       try {
         const nbTotalPosts = Number(
@@ -85,7 +85,7 @@ export default function Feed() {
     if (ethAddr && ethAddr !== -1) {
       getPosts();
     }
-  }, [ethAddr, postOffset]);
+  }, [ethAddr, postOffset, isUserView]);
 
   const handleChangePage = (e, page) => {
     setPostOffset((page - 1) * postsPerPage);
