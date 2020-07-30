@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useMediaQuery } from "@material-ui/core";
 import { Paper, Container } from "@material-ui/core";
 import {
   TableContainer,
@@ -11,10 +12,20 @@ import {
 import { useIPFS } from "../hooks";
 import { IpfsGatewayContext, Web3Context } from "../context";
 import { ipfsGatewayBaseURL } from "../utils/ipfs";
+import theme from "../app/theme";
 
 const useStyles = makeStyles({
   tableHeader: {
     fontWeight: "bold",
+  },
+  trColumn: {
+    "& th, & td": {
+      width: "100%",
+      textAlign: "left",
+    },
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
 });
 
@@ -23,6 +34,7 @@ export default function Status() {
   const classes = useStyles();
   const ethAddr = useContext(Web3Context);
   const isLocalIPFSGateway = useContext(IpfsGatewayContext);
+  const isSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
 
@@ -38,7 +50,10 @@ export default function Status() {
         <Table className={classes.table}>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.name}>
+              <TableRow
+                className={isSm ? classes.trColumn : null}
+                key={row.name}
+              >
                 <TableCell
                   className={classes.tableHeader}
                   component="th"
