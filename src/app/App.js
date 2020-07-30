@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CssBaseline, ThemeProvider } from "@material-ui/core";
 import { Route, HashRouter } from "react-router-dom";
 import { TabbedRoutes } from "../components";
+import { Web3Provider } from "../context/web3Context";
 import Web3 from "web3";
 
 import theme from "./theme";
@@ -45,18 +46,20 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <HashRouter>
-        <Route
-          path="/"
-          render={(props) => (
-            <TabbedRoutes
-              isLocalIPFSGateway={isLocalIPFSGateway}
-              onToggleIPFSGateway={handleToggleIPFSGateway}
-              {...props}
-            />
-          )}
-        />
-      </HashRouter>
+      <Web3Provider value={ethAddr}>
+        <HashRouter>
+          <Route
+            path="/"
+            render={(props) => (
+              <TabbedRoutes
+                isLocalIPFSGateway={isLocalIPFSGateway}
+                onToggleIPFSGateway={handleToggleIPFSGateway}
+                {...props}
+              />
+            )}
+          />
+        </HashRouter>
+      </Web3Provider>
     </ThemeProvider>
   );
 }
