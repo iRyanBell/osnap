@@ -55,9 +55,12 @@ export default function Feed() {
               const postOffsetIdx = postOffset + postIdx;
               const postID = isUserView
                 ? await oSnapContract.methods
-                    .getPostIDByAddressIdx(userAddr, postOffsetIdx)
+                    .getPostIDByAddressIdx(
+                      userAddr,
+                      nbTotalPosts - postOffsetIdx - 1
+                    )
                     .call()
-                : postOffsetIdx;
+                : nbTotalPosts - postOffsetIdx - 1;
 
               const op = await oSnapContract.methods.getOPByID(postID).call();
 
