@@ -68,6 +68,7 @@ export default function Status() {
                 >
                   {row.name}
                 </TableCell>
+
                 {/* Row: Value */}
                 <TableCell align="right">{row.value}</TableCell>
               </TableRow>
