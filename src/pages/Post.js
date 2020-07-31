@@ -24,37 +24,44 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Post() {
   const classes = useStyles();
+
+  const fileUploadRef = useRef(); // Ref for file input element.
+
+  /* State: IPFS Upload */
   const [fileMultihash, setFileMultihash] = useState(null);
+
+  /* State: Smart Contract event */
   const [isSuccess, setIsSuccess] = useState(false);
+
+  /* State: Form values */
   const [recipientA, setRecipientA] = useState(0);
   const [tipA, setTipA] = useState("0");
   const [recipientB, setRecipientB] = useState(0);
   const [tipB, setTipB] = useState("0");
-  const isLocalIPFSGateway = useContext(IpfsGatewayContext);
 
-  const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
-
+  /* Hook into Web3 & IPFS Configuration States. */
   const peerID = useIPFS();
   const ethAddr = useContext(Web3Context);
+  const isLocalIPFSGateway = useContext(IpfsGatewayContext);
 
-  const fileUploadRef = useRef();
-  const handleUpload = () => {
-    fileUploadRef.current.click();
-  };
+  /* Define an IPFS Gateway base URL by preference.  */
+  const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
 
   const handlePost = async () => {
+    /* Convert base-58 multihash to smart-contract friendly struct values. */
     const { digest, hashFunction, size } = getBytes32FromMultiash(
       fileMultihash
     );
 
+    /* Get the transaction details. */
     const oSnapContract = new window.web3.eth.Contract(abi, contractAddress);
-
     const [k0] = await window.web3.eth.getAccounts();
     const totalTipAmount = window.web3.utils
       .toBN(window.web3.utils.toWei(tipA))
       .add(window.web3.utils.toBN(window.web3.utils.toWei(tipB)))
       .toString();
 
+    /* Push transaction to the blockchain. */
     oSnapContract.methods
       .addPost(
         Number(recipientA),
@@ -67,7 +74,7 @@ export default function Post() {
       )
       .send({
         from: k0,
-        value: totalTipAmount.toString(),
+        value: totalTipAmount.toString(), // tipA + tipB
       })
       .on("confirmation", () => {
         setIsSuccess(true);
@@ -78,7 +85,10 @@ export default function Post() {
     const [file] = e.target.files;
 
     try {
+      /* Upload file data to peer-to-peer network. */
       const { path: multihash } = await window.ipfs.add(file);
+
+      /* Store the base-58 content identifier multihash. */
       setFileMultihash(multihash);
     } catch (err) {
       console.error(err);
@@ -106,7 +116,7 @@ export default function Post() {
           <Button
             disabled={!window.ipfs}
             variant="contained"
-            onClick={handleUpload}
+            onClick={() => fileUploadRef.current.click()}
           >
             Upload Image
           </Button>
