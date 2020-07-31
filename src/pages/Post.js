@@ -30,7 +30,7 @@ export default function Post() {
   /* State: IPFS Upload */
   const [fileMultihash, setFileMultihash] = useState(null);
 
-  /* State: Smart Contract event */
+  /* State: Smart contract event */
   const [isSuccess, setIsSuccess] = useState(false);
 
   /* State: Form values */

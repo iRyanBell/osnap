@@ -21,23 +21,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Feed() {
   const classes = useStyles();
-  const peerID = useIPFS();
-  const ethAddr = useContext(Web3Context);
-  const isLocalIPFSGateway = useContext(IpfsGatewayContext);
+
+  /* State: Paginated post listing */
   const [totalPosts, setTotalPosts] = useState(0);
   const [postOffset, setPostOffset] = useState(0);
   const [posts, setPosts] = useState([]);
 
+  /* Hook into Web3 & IPFS Configuration States. */
+  const peerID = useIPFS();
+  const ethAddr = useContext(Web3Context);
+  const isLocalIPFSGateway = useContext(IpfsGatewayContext);
+
+  /* Define an IPFS Gateway base URL by preference.  */
   const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
 
+  /* Define a post listing view relative to root or address path. */
   const isUserView = window.location.hash.startsWith("#/0x");
 
   useEffect(() => {
     const getPosts = async () => {
       const oSnapContract = new window.web3.eth.Contract(abi, contractAddress);
+
+      /* Define user post listing address by URL. */
       const userAddr = window.location.hash.slice(2);
 
       try {
+        /* Define the total posts from the smart contract relative to the listing. */
         const nbTotalPosts = Number(
           isUserView
             ? await oSnapContract.methods
@@ -47,12 +56,17 @@ export default function Feed() {
         );
         setTotalPosts(nbTotalPosts);
 
+        /* Define the total posts to display on the current page. */
         const nbPostsOnPage = Math.min(postsPerPage, nbTotalPosts - postOffset);
 
         setPosts(
           await Promise.all(
+            /* Map each item to a { multihash, postID, op } object */
             [...Array(nbPostsOnPage).keys()].map(async (postIdx) => {
+              /* Define the postID relative to the paginated item offset */
               const postOffsetIdx = postOffset + postIdx;
+
+              /* Define postID by reverse-sorted idx */
               const postID = isUserView
                 ? await oSnapContract.methods
                     .getPostIDByAddressIdx(
@@ -62,8 +76,10 @@ export default function Feed() {
                     .call()
                 : nbTotalPosts - postOffsetIdx - 1;
 
+              /* Define the original poster */
               const op = await oSnapContract.methods.getOPByID(postID).call();
 
+              /* Define the IPFS multihash */
               const {
                 digest,
                 hashFunction,
@@ -91,6 +107,7 @@ export default function Feed() {
   }, [ethAddr, postOffset, isUserView]);
 
   const handleChangePage = (e, page) => {
+    /* Update item offset */
     setPostOffset((page - 1) * postsPerPage);
   };
 
