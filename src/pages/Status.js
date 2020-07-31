@@ -19,6 +19,7 @@ const useStyles = makeStyles({
     fontWeight: "bold",
   },
   trColumn: {
+    /* Single column view. */
     "& th, & td": {
       width: "100%",
       textAlign: "left",
@@ -30,12 +31,17 @@ const useStyles = makeStyles({
 });
 
 export default function Status() {
-  const peerID = useIPFS();
   const classes = useStyles();
+
+  /* Hook into Web3 & IPFS Configuration States. */
+  const peerID = useIPFS();
   const ethAddr = useContext(Web3Context);
   const isLocalIPFSGateway = useContext(IpfsGatewayContext);
+
+  /* Responsive flexbox table collapses to 1-column on small screens. */
   const isSm = useMediaQuery(theme.breakpoints.down("sm"));
 
+  /* Define an IPFS Gateway base URL by preference.  */
   const gatewayBaseURL = ipfsGatewayBaseURL({ isLocalIPFSGateway });
 
   const rows = [
@@ -54,6 +60,7 @@ export default function Status() {
                 className={isSm ? classes.trColumn : null}
                 key={row.name}
               >
+                {/* Row: Name */}
                 <TableCell
                   className={classes.tableHeader}
                   component="th"
@@ -61,6 +68,7 @@ export default function Status() {
                 >
                   {row.name}
                 </TableCell>
+                {/* Row: Value */}
                 <TableCell align="right">{row.value}</TableCell>
               </TableRow>
             ))}
