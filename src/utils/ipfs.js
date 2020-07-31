@@ -4,6 +4,7 @@ export const ipfsGatewayBaseURL = ({ isLocalIPFSGateway }) =>
   isLocalIPFSGateway ? "http://127.0.0.1:8080/ipfs" : "https://ipfs.io/ipfs";
 
 export function getBytes32FromMultiash(multihash) {
+  /* Returns a smart contract Multihash struct object */
   const decoded = bs58.decode(multihash);
 
   return {
@@ -14,6 +15,7 @@ export function getBytes32FromMultiash(multihash) {
 }
 
 export function getMultihashFromBytes32({ digest, hashFunction, size }) {
+  /* Returns a base-58 formatted multihash */
   if (size === 0) return null;
 
   const hashBytes = Buffer.from(digest.slice(2), "hex");
